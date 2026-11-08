@@ -1,0 +1,97 @@
+/* JEE DEV — running cat + subtle GPU-friendly animated background.
+   Decorative-only: pointer-events:none; respects site's motion control and reduced motion. */
+.jee-animated-bg {
+  position:fixed;
+  inset:-72px;
+  pointer-events:none;
+  z-index:0;
+  opacity:.83;
+  transform:translate3d(0,0,0);
+  background-image:
+    radial-gradient(ellipse 29vw 29vw at 17% 27%, rgba(172,104,246,.16), transparent 75%),
+    radial-gradient(ellipse 30vw 25vw at 84% 23%, rgba(4,206,125,.14), transparent 75%),
+    radial-gradient(ellipse 34vw 25vw at 68% 87%, rgba(255,210,48,.15), transparent 77%),
+    linear-gradient(90deg,rgba(24,24,24,.06) 1px,transparent 1px),
+    linear-gradient(rgba(24,24,24,.06) 1px,transparent 1px);
+  background-size:auto,auto,auto,76px 76px,76px 76px;
+  animation:jee-background-glide 26s ease-in-out infinite alternate;
+  will-change:transform;
+}
+.jee-animated-stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.jee-animated-stars i{position:absolute;display:block;width:10px;height:10px;color:var(--star-color,#aa2be4);opacity:.6;animation:jee-twinkle 4.6s ease-in-out infinite,jee-star-float 8s ease-in-out infinite;animation-delay:var(--delay,0s)}
+.jee-animated-stars i::before,.jee-animated-stars i::after{content:'';position:absolute;background:currentColor;border-radius:3px}
+.jee-animated-stars i::before{width:2px;height:100%;left:4px;top:0}
+.jee-animated-stars i::after{height:2px;width:100%;left:0;top:4px}
+.jee-animated-stars i:nth-child(1){top:12%;left:10%;--delay:-2.3s;--star-color:#9a38e7}
+.jee-animated-stars i:nth-child(2){top:32%;left:92%;--delay:-4.1s;--star-color:#00b878}
+.jee-animated-stars i:nth-child(3){top:60%;left:7%;--delay:-3.4s;--star-color:#fb765c}
+.jee-animated-stars i:nth-child(4){top:82%;left:86%;--delay:-1.8s;--star-color:#8c46cf}
+.jee-animated-stars i:nth-child(5){top:43%;left:78%;--delay:-6.8s;--star-color:#df9b00}
+.jee-animated-stars i:nth-child(6){top:90%;left:22%;--delay:-.9s;--star-color:#00b878}
+.jee-animated-stars i:nth-child(7){top:8%;left:72%;--delay:-5.1s;--star-color:#ee6768}
+.jee-animated-stars i:nth-child(8){top:76%;left:46%;--delay:-3s;--star-color:#8c46cf}
+@keyframes jee-background-glide {
+  0%{transform:translate3d(-24px,-21px,0) scale(1)}
+  50%{transform:translate3d(20px,9px,0) scale(1.04)}
+  100%{transform:translate3d(-12px,33px,0) scale(1.015)}
+}
+@keyframes jee-twinkle{0%,100%{opacity:.16;scale:.65}45%,60%{opacity:.88;scale:1.08}}
+@keyframes jee-star-float{0%,100%{translate:0 0}50%{translate:6px -14px}}
+/* Keep background layers behind content; avoid blocking keyboard, clicks or dialogs. */
+body>main,body>.footer{position:relative;z-index:1}
+/* Existing sticky header keeps its z-index. */
+body.neo-dark .jee-animated-bg{opacity:.44;filter:hue-rotate(35deg)}
+body.neo-dark .jee-animated-stars{opacity:.68}
+/* Direction fix: cat SVG artwork naturally faces LEFT (head is on the left).
+   Animate horizontal travel on the wrapper, and mirror ONLY the SVG when
+   moving right. This prevents a cat that appears to run backwards. */
+.jee-cat-lane{position:fixed;left:0;right:0;bottom:19px;height:92px;pointer-events:none;z-index:17;overflow:hidden;contain:layout style paint}
+.jee-running-cat{position:absolute;left:0;bottom:3px;width:144px;height:92px;display:block;filter:drop-shadow(0 4px 0 rgba(0,0,0,.17));animation:jee-cat-journey 23s linear infinite;will-change:transform}
+/* Default faces right: flip original left-facing SVG; preserve a stable width/position. */
+.jee-running-cat svg{display:block;width:100%;height:100%;overflow:visible;transform:scaleX(-1);transform-origin:50% 50%;animation:jee-cat-facing 23s linear infinite;will-change:transform}
+.jee-cat-tail{transform-box:fill-box;transform-origin:11% 90%;animation:jee-cat-tail-wag .42s ease-in-out infinite alternate}
+.jee-cat-leg{transform-box:fill-box;transform-origin:50% 4%;animation:jee-cat-stride .28s ease-in-out infinite alternate}
+.jee-cat-leg--right{animation-delay:-.14s}
+.jee-cat-body{transform-box:fill-box;transform-origin:center;animation:jee-cat-bounce .28s ease-in-out infinite alternate}
+.jee-cat-shadow{transform-box:fill-box;transform-origin:center;animation:jee-cat-shadow .28s ease-in-out infinite alternate}
+/* Travel only; no scaleX on this element, so turning never shifts its position. */
+@keyframes jee-cat-journey{
+  0%{transform:translate3d(128px,0,0)}
+  46%,50%{transform:translate3d(calc(100vw - 160px),0,0)}
+  96%,100%{transform:translate3d(128px,0,0)}
+}
+/* The head (left in source SVG) must point right during outward travel,
+   and left during the return. Turn while the cat pauses at each endpoint. */
+@keyframes jee-cat-facing{
+  0%,48%{transform:scaleX(-1)}
+  50%,98%{transform:scaleX(1)}
+  100%{transform:scaleX(-1)}
+}
+@keyframes jee-cat-stride{0%{transform:rotate(19deg)}100%{transform:rotate(-21deg)}}
+@keyframes jee-cat-bounce{0%{transform:translateY(-2px)}100%{transform:translateY(1px)}}
+@keyframes jee-cat-tail-wag{0%{transform:rotate(-12deg)}100%{transform:rotate(18deg)}}
+@keyframes jee-cat-shadow{0%{transform:scaleX(.86);opacity:.18}100%{transform:scaleX(1.04);opacity:.11}}
+/* Strong, single-choice QRIS badge matching the screenshot's neo-brutalist design. */
+.support-methods--qris span{font-size:13px;padding:11px 26px;letter-spacing:.4px}
+.support-card .support-qris-note{max-width:550px;margin:6px auto 0;color:#727b89}
+@media (max-width:540px){
+  .jee-cat-lane{height:65px;bottom:8px}
+  .jee-running-cat{width:103px;height:65px;transform-origin:center}
+  .support-methods--qris span{font-size:11px}
+}
+@media (max-width:540px){
+  @keyframes jee-cat-journey{
+    0%{transform:translate3d(106px,0,0)}
+    46%,50%{transform:translate3d(calc(100vw - 118px),0,0)}
+    96%,100%{transform:translate3d(106px,0,0)}
+  }
+}
+@media (prefers-reduced-motion:reduce){
+ .jee-animated-bg,.jee-animated-stars i,.jee-running-cat,.jee-running-cat *, .jee-cat-leg,.jee-cat-tail,.jee-cat-shadow{animation:none!important;will-change:auto!important}
+ .jee-running-cat{transform:translate3d(128px,0,0)!important}
+}
+html.motion-paused .jee-animated-bg,html.motion-paused .jee-animated-stars i,html.motion-paused .jee-running-cat,html.motion-paused .jee-running-cat *{animation-play-state:paused!important;will-change:auto}
+
+@media (max-width:540px) and (prefers-reduced-motion:reduce){.jee-running-cat{transform:translate3d(106px,0,0)!important}}
+html.motion-paused .jee-running-cat{transform:translate3d(128px,0,0)!important}
+@media (max-width:540px){html.motion-paused .jee-running-cat{transform:translate3d(106px,0,0)!important}}
