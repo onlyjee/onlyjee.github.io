@@ -83,7 +83,7 @@
   async function initialize() {
     if (!API || !/^https?:\/\//.test(API)) {
       create.disabled=true;
-      say('QRIS belum aktif. Pemilik website perlu menghubungkan frontend ke backend PanzzPay melalui config.js.', true);
+      say('QRIS belom aktif lagi mager setting backend nya wkwk.', true);
       return;
     }
     setBusy(true);
